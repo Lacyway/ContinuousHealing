@@ -24,8 +24,14 @@ namespace ContinuousHealing
 				return true;
 			}
 
-			if (!(effect is GInterface337))
+#if DEBUG
+			CH_Plugin.CH_Logger.LogWarning($"Effect is: {effect.GetType()}, Item is: {___medsController_0.Item.GetType()}]"); 
+#endif
+			if (effect is not GInterface337)
 			{
+#if DEBUG
+				CH_Plugin.CH_Logger.LogWarning("Was not a MedEffect! Cancelling...");
+#endif
 				return false;
 			}
 
@@ -33,7 +39,7 @@ namespace ContinuousHealing
 			if (effect is ActiveHealthController.GClass2746 durEffect)
 			{
 				CH_Plugin.CH_Logger.LogWarning("It's a durEffect, delay: " + durEffect.DelayTime);
-			} 
+			}
 #endif
 
 			Traverse traverse = Traverse.Create(___medsController_0);
@@ -49,15 +55,18 @@ namespace ContinuousHealing
 				return true;
 			}
 
-			if (!(___medsController_0.Item is MedsItemClass))
+			if (___medsController_0.Item is not MedKitItemClass and not MedicalItemClass)
 			{
+#if DEBUG
+				CH_Plugin.CH_Logger.LogWarning($"Item was not of MedKitItemClass/MedicalItemClass type, was: {___medsController_0.Item.GetType()}"); 
+#endif
 				return true;
 			}
 
 			if (player.ActiveHealthController.CanApplyItem(___medsController_0.Item, EBodyPart.Common))
 			{
 #if DEBUG
-				CH_Plugin.CH_Logger.LogWarning("Can apply again!"); 
+				CH_Plugin.CH_Logger.LogWarning("Can apply again!");
 #endif
 				player.HealthController.EffectRemovedEvent -= __instance.method_2;
 				float originalDelay = ActiveHealthController.GClass2746.GClass2756_0.MedEffect.MedKitStartDelay;
