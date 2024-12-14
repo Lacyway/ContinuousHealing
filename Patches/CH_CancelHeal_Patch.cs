@@ -9,7 +9,7 @@ namespace ContinuousHealing.Patches
 	{
 		protected override MethodBase GetTargetMethod()
 		{
-			return typeof(ActiveHealthController).GetMethod(nameof(ActiveHealthController.CancelApplyingItem));
+			return typeof(GControl4).GetMethod(nameof(GControl4.CancelApplyingItem));
 		}
 
 		[PatchPrefix]

@@ -9,10 +9,13 @@ namespace ContinuousHealing.Patches
 {
 	internal class CH_EndHeal_Patch : ModulePatch
 	{
+		private static FieldInfo playerField;
+		
 		public static bool CancelRequsted = false;
 
 		protected override MethodBase GetTargetMethod()
 		{
+			playerField = AccessTools.Field(typeof(Player.MedsController), "_player");
 			return typeof(Player.MedsController.Class1158).GetMethod(nameof(Player.MedsController.Class1158.method_2));
 		}
 
@@ -42,9 +45,7 @@ namespace ContinuousHealing.Patches
 			}
 #endif
 
-			Traverse traverse = Traverse.Create(___medsController_0);
-			Player player = traverse.Field<Player>("_player").Value;
-			int animationVariant = traverse.Field<int>("int_0").Value;
+			Player player = (Player)playerField.GetValue(___medsController_0);
 			if (player == null)
 			{
 				return true;
