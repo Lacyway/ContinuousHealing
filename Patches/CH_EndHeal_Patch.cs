@@ -71,6 +71,14 @@ namespace ContinuousHealing.Patches
 				return true;
 			}
 
+			if (medsItem.MedKitComponent == null)
+			{
+#if DEBUG
+				CH_Plugin.CH_Logger.LogWarning("MedKitComponent was null! Probably a single-use..."); 
+#endif
+				return true;
+			}
+
 			if (medsItem.MedKitComponent.HpResource <= 1 && medsItem.MedKitComponent.MaxHpResource < 95)
 			{
 #if DEBUG

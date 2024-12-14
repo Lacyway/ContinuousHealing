@@ -4,9 +4,11 @@ using ContinuousHealing.Patches;
 
 namespace ContinuousHealing
 {
-	[BepInPlugin("com.lacyway.ch", "ContinuousHealing", "1.1.1")]
+	[BepInPlugin("com.lacyway.ch", "ContinuousHealing", PluginVersion)]
 	internal class CH_Plugin : BaseUnityPlugin
 	{
+		public const string PluginVersion = "1.1.2";
+
 		internal static ManualLogSource CH_Logger;
 
 		protected void Awake()
