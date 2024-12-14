@@ -64,6 +64,21 @@ namespace ContinuousHealing.Patches
 				return true;
 			}
 
+			MedsItemClass medsItem = (MedsItemClass)___medsController_0.Item;
+			if (medsItem == null)
+			{
+				CH_Plugin.CH_Logger.LogError("medsItem was null!");
+				return true;
+			}
+
+			if (medsItem.MedKitComponent.HpResource <= 1 && medsItem.MedKitComponent.MaxHpResource < 95)
+			{
+#if DEBUG
+				CH_Plugin.CH_Logger.LogWarning("Resource was equalTo or lessThan 1 and not a healing kit, skipping...");
+#endif
+				return true;
+			}
+
 			if (player.ActiveHealthController.CanApplyItem(___medsController_0.Item, EBodyPart.Common))
 			{
 #if DEBUG
