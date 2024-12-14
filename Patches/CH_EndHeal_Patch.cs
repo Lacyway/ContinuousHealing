@@ -5,7 +5,7 @@ using HarmonyLib;
 using SPT.Reflection.Patching;
 using System.Reflection;
 
-namespace ContinuousHealing
+namespace ContinuousHealing.Patches
 {
 	internal class CH_EndHeal_Patch : ModulePatch
 	{

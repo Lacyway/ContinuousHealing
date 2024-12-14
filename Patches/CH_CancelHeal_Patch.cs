@@ -3,13 +3,13 @@ using EFT.HealthSystem;
 using SPT.Reflection.Patching;
 using System.Reflection;
 
-namespace ContinuousHealing
+namespace ContinuousHealing.Patches
 {
 	internal class CH_CancelHeal_Patch : ModulePatch
 	{
 		protected override MethodBase GetTargetMethod()
 		{
-			return typeof(ActiveHealthController).GetMethod(nameof(ActiveHealthController.RemoveMedEffect));
+			return typeof(ActiveHealthController).GetMethod(nameof(ActiveHealthController.CancelApplyingItem));
 		}
 
 		[PatchPrefix]

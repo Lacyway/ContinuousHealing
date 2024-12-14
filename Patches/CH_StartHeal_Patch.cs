@@ -2,7 +2,7 @@
 using SPT.Reflection.Patching;
 using System.Reflection;
 
-namespace ContinuousHealing
+namespace ContinuousHealing.Patches
 {
 	internal class CH_StartHeal_Patch : ModulePatch
 	{
