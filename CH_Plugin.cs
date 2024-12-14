@@ -4,7 +4,7 @@ using ContinuousHealing.Patches;
 
 namespace ContinuousHealing
 {
-	[BepInPlugin("com.lacyway.ch", "ContinuousHealing", "1.1.0")]
+	[BepInPlugin("com.lacyway.ch", "ContinuousHealing", "1.1.1")]
 	internal class CH_Plugin : BaseUnityPlugin
 	{
 		internal static ManualLogSource CH_Logger;
