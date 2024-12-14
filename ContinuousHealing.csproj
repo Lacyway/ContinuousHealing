@@ -77,7 +77,6 @@
     <Compile Include="Patches\CH_CancelHeal_Patch.cs" />
     <Compile Include="Patches\CH_EndHeal_Patch.cs" />
     <Compile Include="CH_Plugin.cs" />
-    <Compile Include="Patches\GameWorld_OnGameStarted_Patch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
