@@ -7,7 +7,7 @@ namespace ContinuousHealing
 	[BepInPlugin("com.lacyway.ch", "ContinuousHealing", PluginVersion)]
 	internal class CH_Plugin : BaseUnityPlugin
 	{
-		public const string PluginVersion = "1.1.2";
+		public const string PluginVersion = "1.1.3";
 
 		internal static ManualLogSource CH_Logger;
 

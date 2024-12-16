@@ -8,13 +8,13 @@ namespace ContinuousHealing.Patches
 	{
 		protected override MethodBase GetTargetMethod()
 		{
-			return typeof(Player.MedsController).GetMethod(nameof(Player.MedsController.smethod_6)).MakeGenericMethod(typeof(Player.MedsController));
+			return typeof(Player.MedsController).GetMethod(nameof(Player.MedsController.Spawn));
 		}
 
 		[PatchPrefix]
-		public static void Prefix(Player player)
+		public static void Prefix(Player ____player)
 		{
-			if (player.IsYourPlayer)
+			if (____player.IsYourPlayer)
 			{
 				CH_EndHeal_Patch.CancelRequsted = false;
 			}
