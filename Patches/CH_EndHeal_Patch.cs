@@ -56,7 +56,7 @@ namespace ContinuousHealing.Patches
 				return true;
 			}
 
-			if (___medsController_0.Item is not MedKitItemClass and not MedicalItemClass)
+			if (___medsController_0.Item is not MedKitItemClass && (!CH_Plugin.HealLimbs.Value || ___medsController_0.Item is not MedicalItemClass))
 			{
 #if DEBUG
 				CH_Plugin.CH_Logger.LogWarning($"Item was not of MedKitItemClass/MedicalItemClass type, was: {___medsController_0.Item.GetType()}"); 
@@ -94,7 +94,7 @@ namespace ContinuousHealing.Patches
 #endif
 				player.HealthController.EffectRemovedEvent -= __instance.method_2;
 				float originalDelay = ActiveHealthController.GClass2746.GClass2756_0.MedEffect.MedKitStartDelay;
-				ActiveHealthController.GClass2746.GClass2756_0.MedEffect.MedKitStartDelay = 0f;
+				ActiveHealthController.GClass2746.GClass2756_0.MedEffect.MedKitStartDelay = (float)CH_Plugin.HealDelay.Value;
 				IEffect newEffect = player.ActiveHealthController.DoMedEffect(___medsController_0.Item, EBodyPart.Common, 1f);
 				if (newEffect == null)
 				{
