@@ -20,7 +20,7 @@ namespace ContinuousHealing.Patches
 #endif
 			if (___Player.IsYourPlayer)
 			{
-				CH_EndHeal_Patch.CancelRequsted = true;
+				CH_EndHeal_Patch.CancelRequested = true;
 			}
 		}
 	}

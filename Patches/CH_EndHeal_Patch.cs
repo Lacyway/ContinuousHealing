@@ -11,19 +11,20 @@ namespace ContinuousHealing.Patches
 	{
 		private static FieldInfo playerField;
 		
-		public static bool CancelRequsted = false;
+		public static bool CancelRequested = false;
 
 		protected override MethodBase GetTargetMethod()
 		{
 			playerField = AccessTools.Field(typeof(Player.MedsController), "_player");
-			return typeof(Player.MedsController.Class1158).GetMethod(nameof(Player.MedsController.Class1158.method_2));
+			return typeof(Player.MedsController.Class1172).GetMethod(nameof(Player.MedsController.Class1172.method_8));
 		}
 
 		[PatchPrefix]
-		public static bool Prefix(Player.MedsController.Class1158 __instance, Player.MedsController ___medsController_0, IEffect effect, Callback<IOnHandsUseCallback> ___callback_0)
+		public static bool Prefix(Player.MedsController.Class1172 __instance, Player.MedsController ___medsController_0, IEffect effect, Callback<IOnHandsUseCallback> ___callback_0)
 		{
-			if (CancelRequsted)
+			if (CancelRequested)
 			{
+                __instance.ClearQueue();
 				return true;
 			}
 
@@ -39,7 +40,7 @@ namespace ContinuousHealing.Patches
 			}
 
 #if DEBUG
-			if (effect is ActiveHealthController.GClass2746 durEffect)
+			if (effect is ActiveHealthController.GClass2813 durEffect)
 			{
 				CH_Plugin.CH_Logger.LogWarning("It's a durEffect, delay: " + durEffect.DelayTime);
 			}
@@ -92,9 +93,9 @@ namespace ContinuousHealing.Patches
 #if DEBUG
 				CH_Plugin.CH_Logger.LogWarning("Can apply again!");
 #endif
-				player.HealthController.EffectRemovedEvent -= __instance.method_2;
-				float originalDelay = ActiveHealthController.GClass2746.GClass2756_0.MedEffect.MedKitStartDelay;
-				ActiveHealthController.GClass2746.GClass2756_0.MedEffect.MedKitStartDelay = (float)CH_Plugin.HealDelay.Value;
+				player.HealthController.EffectRemovedEvent -= __instance.method_8;
+				float originalDelay = ActiveHealthController.GClass2813.GClass2823_0.MedEffect.MedKitStartDelay;
+				ActiveHealthController.GClass2813.GClass2823_0.MedEffect.MedKitStartDelay = (float)CH_Plugin.HealDelay.Value;
 				IEffect newEffect = player.ActiveHealthController.DoMedEffect(___medsController_0.Item, EBodyPart.Common, 1f);
 				if (newEffect == null)
 				{
@@ -103,11 +104,11 @@ namespace ContinuousHealing.Patches
 					Callback<IOnHandsUseCallback> callbackToRun = ___callback_0;
 					___callback_0 = null;
 					callbackToRun(___medsController_0);
-					ActiveHealthController.GClass2746.GClass2756_0.MedEffect.MedKitStartDelay = originalDelay;
+					ActiveHealthController.GClass2813.GClass2823_0.MedEffect.MedKitStartDelay = originalDelay;
 					return false;
 				};
-				player.HealthController.EffectRemovedEvent += __instance.method_2;
-				ActiveHealthController.GClass2746.GClass2756_0.MedEffect.MedKitStartDelay = originalDelay;
+				player.HealthController.EffectRemovedEvent += __instance.method_8;
+				ActiveHealthController.GClass2813.GClass2823_0.MedEffect.MedKitStartDelay = originalDelay;
 				return false;
 			}
 
