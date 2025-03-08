@@ -5,6 +5,7 @@ using EFT.InventoryLogic;
 using HarmonyLib;
 using SPT.Reflection.Patching;
 using System.Reflection;
+using UnityEngine;
 
 namespace ContinuousHealing.Patches
 {
@@ -12,6 +13,7 @@ namespace ContinuousHealing.Patches
     {
         private static FieldInfo playerField;
 
+        public static int Animation = 0;
         public static bool CancelRequested = false;
 
         protected override MethodBase GetTargetMethod()
@@ -114,15 +116,14 @@ namespace ContinuousHealing.Patches
 
                 if (CH_Plugin.ResetAnimation.Value)
                 {
+                    Animation++;
                     int variant = 0;
                     if (___medsController_0.Item.TryGetItemComponent(out AnimationVariantsComponent animationVariantsComponent))
                     {
-                        int variants = animationVariantsComponent.VariantsNumber;
-                        variant = UnityEngine.Random.Range(0, variants);
-#if DEBUG
-                        CH_Plugin.CH_Logger.LogWarning($"Got {variants} variants, new anim is {variant}");
-#endif
+                        variant = animationVariantsComponent.VariantsNumber;
                     }
+
+                    int newAnim = (int)Mathf.Repeat((float)Animation, (float)variant);
 
                     if (___medsController_0.FirearmsAnimator != null)
                     {
@@ -140,7 +141,7 @@ namespace ContinuousHealing.Patches
 #if DEBUG
                         CH_Plugin.CH_Logger.LogWarning("Setting new anim");
 #endif
-                        animator.SetAnimationVariant(variant);
+                        animator.SetAnimationVariant(newAnim);
                     }
                 }
 
