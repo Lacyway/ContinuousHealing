@@ -113,31 +113,34 @@ namespace ContinuousHealing.Patches
 				player.HealthController.EffectRemovedEvent += __instance.method_8;
 				ActiveHealthController.GClass2813.GClass2823_0.MedEffect.MedKitStartDelay = originalDelay;
 
-                if (___medsController_0.Item.TryGetItemComponent(out AnimationVariantsComponent animationVariantsComponent))
+                if (CH_Plugin.ResetAnimation.Value)
                 {
-                    int variants = animationVariantsComponent.VariantsNumber;
-                    int newAnim = UnityEngine.Random.Range(0, variants);
-#if DEBUG
-                    CH_Plugin.CH_Logger.LogWarning($"Got {variants} variants, new anim is {newAnim}"); 
-#endif
-                    if (___medsController_0.FirearmsAnimator != null)
+                    if (___medsController_0.Item.TryGetItemComponent(out AnimationVariantsComponent animationVariantsComponent))
                     {
-                        float mult = player.Skills.SurgerySpeed.Value / 100f;
-                        FirearmsAnimator animator = ___medsController_0.FirearmsAnimator;
-                        animator.SetUseTimeMultiplier(1f + mult);
-                        if (animator.HasNextLimb())
+                        int variants = animationVariantsComponent.VariantsNumber;
+                        int newAnim = UnityEngine.Random.Range(0, variants);
+#if DEBUG
+                        CH_Plugin.CH_Logger.LogWarning($"Got {variants} variants, new anim is {newAnim}");
+#endif
+                        if (___medsController_0.FirearmsAnimator != null)
                         {
+                            float mult = player.Skills.SurgerySpeed.Value / 100f;
+                            FirearmsAnimator animator = ___medsController_0.FirearmsAnimator;
+                            animator.SetUseTimeMultiplier(1f + mult);
+                            if (animator.HasNextLimb())
+                            {
 #if DEBUG
-                            CH_Plugin.CH_Logger.LogWarning("Has next limb!");
+                                CH_Plugin.CH_Logger.LogWarning("Has next limb!");
 #endif
-                            animator.SetActiveParam(false, false);
-                            animator.SetNextLimb(true);
+                                animator.SetActiveParam(false, false);
+                                animator.SetNextLimb(true);
+                            }
+#if DEBUG
+                            CH_Plugin.CH_Logger.LogWarning("Setting new anim");
+#endif
+                            animator.SetAnimationVariant(newAnim);
                         }
-#if DEBUG
-                        CH_Plugin.CH_Logger.LogWarning("Setting new anim"); 
-#endif
-                        animator.SetAnimationVariant(newAnim);
-                    }
+                    } 
                 }
 
                 return false;
