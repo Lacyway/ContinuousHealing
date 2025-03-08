@@ -28,7 +28,7 @@ namespace ContinuousHealing
 				new ConfigDescription("The delay between every heal on each limb. Game default is 2, set to 0 to use intended Continuous Healing behavior.",
 				new AcceptableValueRange<int>(0, 5)));
             ResetAnimation = Config.Bind("1. Settings", "Reset Animations", true,
-                new ConfigDescription("If a new animaton should be played between every limb being healed. This does not affect the speed at which you heal.");
+                new ConfigDescription("If a new animaton should be played between every limb being healed. This does not affect the speed at which you heal."));
 
 			new CH_EndHeal_Patch().Enable();
 			new CH_CancelHeal_Patch().Enable();
