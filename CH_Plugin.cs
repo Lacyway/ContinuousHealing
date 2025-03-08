@@ -2,6 +2,7 @@
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using ContinuousHealing.Patches;
+using EFT.UI;
 
 namespace ContinuousHealing
 {
@@ -29,6 +30,10 @@ namespace ContinuousHealing
 			new CH_EndHeal_Patch().Enable();
 			new CH_CancelHeal_Patch().Enable();
 			new CH_StartHeal_Patch().Enable();
-		}
+
+#if DEBUG
+            ConsoleScreen.Processor.RegisterCommandGroup<DebugCommands>(); 
+#endif
+        }
 	}
 }

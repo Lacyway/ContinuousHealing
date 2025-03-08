@@ -1,9 +1,12 @@
 ﻿using Comfort.Common;
 using EFT;
 using EFT.HealthSystem;
+using EFT.InventoryLogic;
 using HarmonyLib;
 using SPT.Reflection.Patching;
+using System;
 using System.Reflection;
+using UnityEngine;
 
 namespace ContinuousHealing.Patches
 {
@@ -31,7 +34,7 @@ namespace ContinuousHealing.Patches
 #if DEBUG
 			CH_Plugin.CH_Logger.LogWarning($"Effect is: {effect.GetType()}, Item is: {___medsController_0.Item.GetType()}]"); 
 #endif
-			if (effect is not GInterface337)
+			if (effect is not GInterface350)
 			{
 #if DEBUG
 				CH_Plugin.CH_Logger.LogWarning("Was not a MedEffect! Cancelling...");
@@ -93,7 +96,7 @@ namespace ContinuousHealing.Patches
 #if DEBUG
 				CH_Plugin.CH_Logger.LogWarning("Can apply again!");
 #endif
-				player.HealthController.EffectRemovedEvent -= __instance.method_8;
+                player.HealthController.EffectRemovedEvent -= __instance.method_8;
 				float originalDelay = ActiveHealthController.GClass2813.GClass2823_0.MedEffect.MedKitStartDelay;
 				ActiveHealthController.GClass2813.GClass2823_0.MedEffect.MedKitStartDelay = (float)CH_Plugin.HealDelay.Value;
 				IEffect newEffect = player.ActiveHealthController.DoMedEffect(___medsController_0.Item, EBodyPart.Common, 1f);
@@ -109,7 +112,35 @@ namespace ContinuousHealing.Patches
 				};
 				player.HealthController.EffectRemovedEvent += __instance.method_8;
 				ActiveHealthController.GClass2813.GClass2823_0.MedEffect.MedKitStartDelay = originalDelay;
-				return false;
+
+                if (___medsController_0.Item.TryGetItemComponent(out AnimationVariantsComponent animationVariantsComponent))
+                {
+                    int variants = animationVariantsComponent.VariantsNumber;
+                    int newAnim = UnityEngine.Random.Range(0, variants);
+#if DEBUG
+                    CH_Plugin.CH_Logger.LogWarning($"Got {variants} variants, new anim is {newAnim}"); 
+#endif
+                    if (___medsController_0.FirearmsAnimator != null)
+                    {
+                        float mult = player.Skills.SurgerySpeed.Value / 100f;
+                        FirearmsAnimator animator = ___medsController_0.FirearmsAnimator;
+                        animator.SetUseTimeMultiplier(1f + mult);
+                        if (animator.HasNextLimb())
+                        {
+#if DEBUG
+                            CH_Plugin.CH_Logger.LogWarning("Has next limb!");
+#endif
+                            animator.SetActiveParam(false, false);
+                            animator.SetNextLimb(true);
+                        }
+#if DEBUG
+                        CH_Plugin.CH_Logger.LogWarning("Setting new anim"); 
+#endif
+                        animator.SetAnimationVariant(newAnim);
+                    }
+                }
+
+                return false;
 			}
 
 			return true;

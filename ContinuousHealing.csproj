@@ -48,8 +48,14 @@
     <Reference Include="BepInEx">
       <HintPath>References\BepInEx.dll</HintPath>
     </Reference>
+    <Reference Include="bsg.console.core">
+      <HintPath>References\bsg.console.core.dll</HintPath>
+    </Reference>
     <Reference Include="Comfort">
       <HintPath>References\Comfort.dll</HintPath>
+    </Reference>
+    <Reference Include="ItemComponent.Types">
+      <HintPath>References\ItemComponent.Types.dll</HintPath>
     </Reference>
     <Reference Include="spt-reflection">
       <HintPath>References\spt-reflection.dll</HintPath>
@@ -73,6 +79,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DebugCommands.cs" />
     <Compile Include="Patches\CH_StartHeal_Patch.cs" />
     <Compile Include="Patches\CH_CancelHeal_Patch.cs" />
     <Compile Include="Patches\CH_EndHeal_Patch.cs" />
