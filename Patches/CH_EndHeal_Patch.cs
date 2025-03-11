@@ -114,7 +114,7 @@ namespace ContinuousHealing.Patches
                 player.HealthController.EffectRemovedEvent += __instance.method_8;
                 ActiveHealthController.GClass2813.GClass2823_0.MedEffect.MedKitStartDelay = originalDelay;
 
-                if (CH_Plugin.ResetAnimation.Value)
+                if (CH_Plugin.ResetAnimation.Value && ___medsController_0.Item is not MedicalItemClass)
                 {
                     Animation++;
                     int variant = 0;
