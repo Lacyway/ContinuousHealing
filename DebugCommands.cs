@@ -4,7 +4,7 @@ using EFT.Console.Core;
 
 namespace ContinuousHealing;
 
-public static class DebugCommands
+public class DebugCommands
 {
     [ConsoleCommand("damageLimbs")]
     public static void DamageLimbs()

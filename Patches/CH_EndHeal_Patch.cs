@@ -35,7 +35,7 @@ internal class CH_EndHeal_Patch : ModulePatch
 #if DEBUG
         CH_Plugin.CH_Logger.LogWarning($"Effect is: {effect.GetType()}, Item is: {__instance.MedsController_0.Item.GetType()}]");
 #endif
-        if (effect is not GInterface350)
+        if (effect is not GInterface376)
         {
 #if DEBUG
             CH_Plugin.CH_Logger.LogWarning("Was not a MedEffect! Ignoring...");
