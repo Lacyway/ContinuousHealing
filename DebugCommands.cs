@@ -2,21 +2,20 @@
 using EFT;
 using EFT.Console.Core;
 
-namespace ContinuousHealing
+namespace ContinuousHealing;
+
+public static class DebugCommands
 {
-    public class DebugCommands
+    [ConsoleCommand("damageLimbs")]
+    public static void DamageLimbs()
     {
-        [ConsoleCommand("damageLimbs")]
-        public static void DamageLimbs()
+        if (Singleton<GameWorld>.Instantiated)
         {
-            if (Singleton<GameWorld>.Instantiated)
+            GameWorld gameWorld = Singleton<GameWorld>.Instance;
+            if (gameWorld.MainPlayer != null)
             {
-                GameWorld gameWorld = Singleton<GameWorld>.Instance;
-                if (gameWorld.MainPlayer != null)
-                {
-                    gameWorld.MainPlayer.ActiveHealthController.ApplyDamage(EBodyPart.LeftArm, 20, default);
-                    gameWorld.MainPlayer.ActiveHealthController.ApplyDamage(EBodyPart.RightArm, 20, default);
-                }
+                gameWorld.MainPlayer.ActiveHealthController.ApplyDamage(EBodyPart.LeftArm, 20, default);
+                gameWorld.MainPlayer.ActiveHealthController.ApplyDamage(EBodyPart.RightArm, 20, default);
             }
         }
     }
