@@ -24,8 +24,7 @@ internal class CH_EndHeal_Patch : ModulePatch
     }
 
     [PatchPrefix]
-    public static bool Prefix(Player.MedsController.ObservedMedsControllerClass __instance, Player.MedsController ___medsController_0,
-        IEffect effect, Callback<IOnHandsUseCallback> ___callback_0)
+    public static bool Prefix(Player.MedsController.ObservedMedsControllerClass __instance, IEffect effect)
     {
         if (CancelRequested)
         {
@@ -34,7 +33,7 @@ internal class CH_EndHeal_Patch : ModulePatch
         }
 
 #if DEBUG
-        CH_Plugin.CH_Logger.LogWarning($"Effect is: {effect.GetType()}, Item is: {___medsController_0.Item.GetType()}]");
+        CH_Plugin.CH_Logger.LogWarning($"Effect is: {effect.GetType()}, Item is: {__instance.MedsController_0.Item.GetType()}]");
 #endif
         if (effect is not GInterface350)
         {
@@ -51,7 +50,7 @@ internal class CH_EndHeal_Patch : ModulePatch
         }
 #endif
 
-        Player player = (Player)_playerField.GetValue(___medsController_0);
+        Player player = (Player)_playerField.GetValue(__instance.MedsController_0);
         if (player == null)
         {
             return true;
@@ -62,15 +61,15 @@ internal class CH_EndHeal_Patch : ModulePatch
             return true;
         }
 
-        if (___medsController_0.Item is not MedKitItemClass && (!CH_Plugin.HealLimbs.Value || ___medsController_0.Item is not MedicalItemClass))
+        if (__instance.MedsController_0.Item is not MedKitItemClass && (!CH_Plugin.HealLimbs.Value || __instance.MedsController_0.Item is not MedicalItemClass))
         {
 #if DEBUG
-            CH_Plugin.CH_Logger.LogWarning($"Item was not of MedKitItemClass/MedicalItemClass type, was: {___medsController_0.Item.GetType()}");
+            CH_Plugin.CH_Logger.LogWarning($"Item was not of MedKitItemClass/MedicalItemClass type, was: {__instance.MedsController_0.Item.GetType()}");
 #endif
             return true;
         }
 
-        MedsItemClass medsItem = (MedsItemClass)___medsController_0.Item;
+        MedsItemClass medsItem = (MedsItemClass)__instance.MedsController_0.Item;
         if (medsItem == null)
         {
             CH_Plugin.CH_Logger.LogError("medsItem was null!");
@@ -93,7 +92,7 @@ internal class CH_EndHeal_Patch : ModulePatch
             return true;
         }
 
-        if (player.ActiveHealthController.CanApplyItem(___medsController_0.Item, EBodyPart.Common))
+        if (player.ActiveHealthController.CanApplyItem(__instance.MedsController_0.Item, EBodyPart.Common))
         {
 #if DEBUG
             CH_Plugin.CH_Logger.LogWarning("Can apply again!");
@@ -101,14 +100,14 @@ internal class CH_EndHeal_Patch : ModulePatch
             player.HealthController.EffectRemovedEvent -= __instance.method_8;
             float originalDelay = ActiveHealthController.GClass3008.GClass3019_0.MedEffect.MedKitStartDelay;
             ActiveHealthController.GClass3008.GClass3019_0.MedEffect.MedKitStartDelay = (float)CH_Plugin.HealDelay.Value;
-            IEffect newEffect = player.ActiveHealthController.DoMedEffect(___medsController_0.Item, EBodyPart.Common, 1f);
+            IEffect newEffect = player.ActiveHealthController.DoMedEffect(__instance.MedsController_0.Item, EBodyPart.Common, 1f);
             if (newEffect == null)
             {
                 __instance.State = Player.EOperationState.Finished;
-                ___medsController_0.FailedToApply = true;
-                Callback<IOnHandsUseCallback> callbackToRun = ___callback_0;
-                ___callback_0 = null;
-                callbackToRun(___medsController_0);
+                __instance.MedsController_0.FailedToApply = true;
+                Callback<IOnHandsUseCallback> callbackToRun = __instance.Callback_0;
+                __instance.Callback_0 = null;
+                callbackToRun(__instance.MedsController_0);
                 ActiveHealthController.GClass3008.GClass3019_0.MedEffect.MedKitStartDelay = originalDelay;
                 return false;
             }
@@ -116,21 +115,21 @@ internal class CH_EndHeal_Patch : ModulePatch
             player.HealthController.EffectRemovedEvent += __instance.method_8;
             ActiveHealthController.GClass3008.GClass3019_0.MedEffect.MedKitStartDelay = originalDelay;
 
-            if (CH_Plugin.ResetAnimation.Value && ___medsController_0.Item is not MedicalItemClass)
+            if (CH_Plugin.ResetAnimation.Value && __instance.MedsController_0.Item is not MedicalItemClass)
             {
                 Animation++;
                 int variant = 0;
-                if (___medsController_0.Item.TryGetItemComponent(out AnimationVariantsComponent animationVariantsComponent))
+                if (__instance.MedsController_0.Item.TryGetItemComponent(out AnimationVariantsComponent animationVariantsComponent))
                 {
                     variant = animationVariantsComponent.VariantsNumber;
                 }
 
                 int newAnim = (int)Mathf.Repeat((float)Animation, (float)variant);
 
-                if (___medsController_0.FirearmsAnimator != null)
+                if (__instance.MedsController_0.FirearmsAnimator != null)
                 {
                     float mult = player.Skills.SurgerySpeed.Value / 100f;
-                    FirearmsAnimator animator = ___medsController_0.FirearmsAnimator;
+                    FirearmsAnimator animator = __instance.MedsController_0.FirearmsAnimator;
                     animator.SetUseTimeMultiplier(1f + mult);
                     animator.SetActiveParam(true, false);
                     if (animator.HasNextLimb())
