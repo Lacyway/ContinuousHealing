@@ -1,10 +1,10 @@
-﻿using Comfort.Common;
+﻿using System.Reflection;
+using Comfort.Common;
 using EFT;
 using EFT.HealthSystem;
 using EFT.InventoryLogic;
 using HarmonyLib;
 using SPT.Reflection.Patching;
-using System.Reflection;
 using UnityEngine;
 
 namespace ContinuousHealing.Patches;
@@ -29,6 +29,7 @@ internal class CH_EndHeal_Patch : ModulePatch
         if (CancelRequested)
         {
             __instance.ClearQueue();
+            __instance.method_9();
             return true;
         }
 
@@ -50,7 +51,7 @@ internal class CH_EndHeal_Patch : ModulePatch
         }
 #endif
 
-        Player player = (Player)_playerField.GetValue(__instance.MedsController_0);
+        var player = (Player)_playerField.GetValue(__instance.MedsController_0);
         if (player == null)
         {
             return true;
@@ -69,7 +70,7 @@ internal class CH_EndHeal_Patch : ModulePatch
             return true;
         }
 
-        MedsItemClass medsItem = (MedsItemClass)__instance.MedsController_0.Item;
+        var medsItem = (MedsItemClass)__instance.MedsController_0.Item;
         if (medsItem == null)
         {
             CH_Plugin.CH_Logger.LogError("medsItem was null!");
@@ -98,7 +99,7 @@ internal class CH_EndHeal_Patch : ModulePatch
             CH_Plugin.CH_Logger.LogWarning("Can apply again!");
 #endif
             player.HealthController.EffectRemovedEvent -= __instance.method_8;
-            float originalDelay = ActiveHealthController.GClass3008.GClass3019_0.MedEffect.MedKitStartDelay;
+            var originalDelay = ActiveHealthController.GClass3008.GClass3019_0.MedEffect.MedKitStartDelay;
             ActiveHealthController.GClass3008.GClass3019_0.MedEffect.MedKitStartDelay = (float)CH_Plugin.HealDelay.Value;
             IEffect newEffect = player.ActiveHealthController.DoMedEffect(__instance.MedsController_0.Item, EBodyPart.Common, 1f);
             if (newEffect == null)
@@ -118,17 +119,17 @@ internal class CH_EndHeal_Patch : ModulePatch
             if (CH_Plugin.ResetAnimation.Value && __instance.MedsController_0.Item is not MedicalItemClass)
             {
                 Animation++;
-                int variant = 0;
+                var variant = 0;
                 if (__instance.MedsController_0.Item.TryGetItemComponent(out AnimationVariantsComponent animationVariantsComponent))
                 {
                     variant = animationVariantsComponent.VariantsNumber;
                 }
 
-                int newAnim = (int)Mathf.Repeat((float)Animation, (float)variant);
+                var newAnim = (int)Mathf.Repeat((float)Animation, (float)variant);
 
                 if (__instance.MedsController_0.FirearmsAnimator != null)
                 {
-                    float mult = player.Skills.SurgerySpeed.Value / 100f;
+                    var mult = player.Skills.SurgerySpeed.Value / 100f;
                     FirearmsAnimator animator = __instance.MedsController_0.FirearmsAnimator;
                     animator.SetUseTimeMultiplier(1f + mult);
                     animator.SetActiveParam(true, false);
