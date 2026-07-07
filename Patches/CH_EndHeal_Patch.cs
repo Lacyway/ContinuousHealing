@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using Comfort.Common;
 using EFT;
 using EFT.HealthSystem;
 using EFT.InventoryLogic;
@@ -101,12 +100,12 @@ internal class CH_EndHeal_Patch : ModulePatch
             player.HealthController.EffectRemovedEvent -= __instance.method_8;
             var originalDelay = ActiveHealthController.GClass3008.GClass3019_0.MedEffect.MedKitStartDelay;
             ActiveHealthController.GClass3008.GClass3019_0.MedEffect.MedKitStartDelay = (float)CH_Plugin.HealDelay.Value;
-            IEffect newEffect = player.ActiveHealthController.DoMedEffect(__instance.MedsController_0.Item, EBodyPart.Common, 1f);
+            var newEffect = player.ActiveHealthController.DoMedEffect(__instance.MedsController_0.Item, EBodyPart.Common, 1f);
             if (newEffect == null)
             {
                 __instance.State = Player.EOperationState.Finished;
                 __instance.MedsController_0.FailedToApply = true;
-                Callback<IOnHandsUseCallback> callbackToRun = __instance.Callback_0;
+                var callbackToRun = __instance.Callback_0;
                 __instance.Callback_0 = null;
                 callbackToRun(__instance.MedsController_0);
                 ActiveHealthController.GClass3008.GClass3019_0.MedEffect.MedKitStartDelay = originalDelay;
@@ -126,19 +125,23 @@ internal class CH_EndHeal_Patch : ModulePatch
                 }
 
                 var newAnim = (int)Mathf.Repeat((float)Animation, (float)variant);
+#if DEBUG
+                CH_Plugin.CH_Logger.LogWarning($"New anim: {newAnim}");
+#endif
 
                 if (__instance.MedsController_0.FirearmsAnimator != null)
                 {
                     var mult = player.Skills.SurgerySpeed.Value / 100f;
-                    FirearmsAnimator animator = __instance.MedsController_0.FirearmsAnimator;
+                    var animator = __instance.MedsController_0.FirearmsAnimator;
+                    
                     animator.SetUseTimeMultiplier(1f + mult);
-                    animator.SetActiveParam(true, false);
                     if (animator.HasNextLimb())
                     {
 #if DEBUG
                         CH_Plugin.CH_Logger.LogWarning("Has next limb!");
 #endif
                         animator.SetNextLimb(true);
+                        animator.SetActiveParam(false, false);
                     }
 #if DEBUG
                     CH_Plugin.CH_Logger.LogWarning("Setting new anim");
