@@ -4,7 +4,7 @@ using SPT.Reflection.Patching;
 
 namespace ContinuousHealing.Patches;
 
-internal class CH_StartHeal_Patch : ModulePatch
+internal sealed class CH_StartHeal_Patch : ModulePatch
 {
     protected override MethodBase GetTargetMethod()
     {

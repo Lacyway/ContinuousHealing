@@ -8,34 +8,31 @@ using UnityEngine;
 
 namespace ContinuousHealing.Patches;
 
-internal class CH_EndHeal_Patch : ModulePatch
+internal sealed class CH_EndHeal_Patch : ModulePatch
 {
-    private static FieldInfo _playerField;
-
     public static int Animation;
     public static bool CancelRequested;
 
     protected override MethodBase GetTargetMethod()
     {
-        _playerField = AccessTools.Field(typeof(Player.MedsController), "_player");
-        return typeof(Player.MedsController.ObservedMedsControllerClass)
-            .GetMethod("method_8");
+        return typeof(Player.MedsController.MedsInHandsOperation)
+            .GetMethod("OnEffectRemoved");
     }
 
     [PatchPrefix]
-    public static bool Prefix(Player.MedsController.ObservedMedsControllerClass __instance, IEffect effect)
+    public static bool Prefix(Player.MedsController.MedsInHandsOperation __instance, IHealthEffect effect)
     {
         if (CancelRequested)
         {
             __instance.ClearQueue();
-            __instance.method_9();
+            __instance.Finish();
             return true;
         }
 
 #if DEBUG
-        CH_Plugin.CH_Logger.LogWarning($"Effect is: {effect.GetType()}, Item is: {__instance.MedsController_0.Item.GetType()}]");
+        CH_Plugin.CH_Logger.LogWarning($"Effect is: {effect.GetType()}, Item is: {__instance.IHealthEffect.Item.GetType()}]");
 #endif
-        if (effect is not GInterface376)
+        if (effect is not IMedEffect)
         {
 #if DEBUG
             CH_Plugin.CH_Logger.LogWarning("Was not a MedEffect! Ignoring...");
@@ -50,7 +47,7 @@ internal class CH_EndHeal_Patch : ModulePatch
         }
 #endif
 
-        var player = (Player)_playerField.GetValue(__instance.MedsController_0);
+        var player = __instance._controller._player;
         if (player == null)
         {
             return true;
@@ -61,15 +58,15 @@ internal class CH_EndHeal_Patch : ModulePatch
             return true;
         }
 
-        if (__instance.MedsController_0.Item is not MedKitItemClass && (!CH_Plugin.HealLimbs.Value || __instance.MedsController_0.Item is not MedicalItemClass))
+        if (__instance._controller.Item is not Meds && (!CH_Plugin.HealLimbs.Value || __instance._controller.Item is not Medical))
         {
 #if DEBUG
-            CH_Plugin.CH_Logger.LogWarning($"Item was not of MedKitItemClass/MedicalItemClass type, was: {__instance.MedsController_0.Item.GetType()}");
+            CH_Plugin.CH_Logger.LogWarning($"Item was not of MedKitItemClass/MedicalItemClass type, was: {__instance.IHealthEffect.Item.GetType()}");
 #endif
             return true;
         }
 
-        var medsItem = (MedsItemClass)__instance.MedsController_0.Item;
+        var medsItem = (Meds)__instance._controller.Item;
         if (medsItem == null)
         {
             CH_Plugin.CH_Logger.LogError("medsItem was null!");
@@ -92,34 +89,34 @@ internal class CH_EndHeal_Patch : ModulePatch
             return true;
         }
 
-        if (player.ActiveHealthController.CanApplyItem(__instance.MedsController_0.Item, EBodyPart.Common))
+        if (player.ActiveHealthController.CanApplyItem(__instance._controller.Item, EBodyPart.Common))
         {
 #if DEBUG
             CH_Plugin.CH_Logger.LogWarning("Can apply again!");
 #endif
-            player.HealthController.EffectRemovedEvent -= __instance.method_8;
-            var originalDelay = ActiveHealthController.GClass3008.GClass3019_0.MedEffect.MedKitStartDelay;
-            ActiveHealthController.GClass3008.GClass3019_0.MedEffect.MedKitStartDelay = (float)CH_Plugin.HealDelay.Value;
-            var newEffect = player.ActiveHealthController.DoMedEffect(__instance.MedsController_0.Item, EBodyPart.Common, 1f);
+            player.HealthController.EffectRemovedEvent -= __instance.OnEffectRemoved;
+            var originalDelay = ActiveHealthController._settings.Effects.MedEffect.MedKitStartDelay;
+            ActiveHealthController._settings.Effects.MedEffect.MedKitStartDelay = (float)CH_Plugin.HealDelay.Value;
+            var newEffect = player.ActiveHealthController.DoMedEffect(__instance._controller.Item, EBodyPart.Common, 1f);
             if (newEffect == null)
             {
                 __instance.State = Player.EOperationState.Finished;
-                __instance.MedsController_0.FailedToApply = true;
-                var callbackToRun = __instance.Callback_0;
-                __instance.Callback_0 = null;
-                callbackToRun(__instance.MedsController_0);
-                ActiveHealthController.GClass3008.GClass3019_0.MedEffect.MedKitStartDelay = originalDelay;
+                __instance._controller.FailedToApply = true;
+                var callbackToRun = __instance._onUsedCallback;
+                __instance._onUsedCallback = null;
+                callbackToRun(__instance._controller);
+                ActiveHealthController._settings.Effects.MedEffect.MedKitStartDelay = originalDelay;
                 return false;
             }
             ;
-            player.HealthController.EffectRemovedEvent += __instance.method_8;
-            ActiveHealthController.GClass3008.GClass3019_0.MedEffect.MedKitStartDelay = originalDelay;
+            player.HealthController.EffectRemovedEvent += __instance.OnEffectRemoved;
+            ActiveHealthController._settings.Effects.MedEffect.MedKitStartDelay = originalDelay;
 
-            if (CH_Plugin.ResetAnimation.Value && __instance.MedsController_0.Item is not MedicalItemClass)
+            if (CH_Plugin.ResetAnimation.Value && __instance._controller.Item is not Meds)
             {
                 Animation++;
                 var variant = 0;
-                if (__instance.MedsController_0.Item.TryGetItemComponent(out AnimationVariantsComponent animationVariantsComponent))
+                if (__instance._controller.Item.TryGetItemComponent(out AnimationVariantsComponent animationVariantsComponent))
                 {
                     variant = animationVariantsComponent.VariantsNumber;
                 }
@@ -129,10 +126,10 @@ internal class CH_EndHeal_Patch : ModulePatch
                 CH_Plugin.CH_Logger.LogWarning($"New anim: {newAnim}");
 #endif
 
-                if (__instance.MedsController_0.FirearmsAnimator != null)
+                if (__instance._controller.FirearmsAnimator != null)
                 {
                     var mult = player.Skills.SurgerySpeed.Value / 100f;
-                    var animator = __instance.MedsController_0.FirearmsAnimator;
+                    var animator = __instance._controller.FirearmsAnimator;
                     
                     animator.SetUseTimeMultiplier(1f + mult);
                     if (animator.HasNextLimb())

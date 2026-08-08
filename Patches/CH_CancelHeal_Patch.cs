@@ -1,15 +1,16 @@
 ﻿using System.Reflection;
 using EFT;
+using EFT.HealthSystem;
 using SPT.Reflection.Patching;
 
 namespace ContinuousHealing.Patches;
 
-internal class CH_CancelHeal_Patch : ModulePatch
+internal sealed class CH_CancelHeal_Patch : ModulePatch
 {
     protected override MethodBase GetTargetMethod()
     {
-        return typeof(GClass3010)
-            .GetMethod(nameof(GClass3010.CancelApplyingItem));
+        return typeof(PlayerHealthController)
+            .GetMethod(nameof(PlayerHealthController.CancelApplyingItem));
     }
 
     [PatchPrefix]
