@@ -58,7 +58,7 @@ internal sealed class CH_EndHeal_Patch : ModulePatch
             return true;
         }
 
-        if (__instance._controller.Item is not Meds && (!CH_Plugin.HealLimbs.Value || __instance._controller.Item is not Medical))
+        if (__instance._controller.Item is not MedKit && (!CH_Plugin.HealLimbs.Value || __instance._controller.Item is not Medical))
         {
 #if DEBUG
             CH_Plugin.CH_Logger.LogWarning($"Item was not of MedKitItemClass/MedicalItemClass type, was: {__instance.IHealthEffect.Item.GetType()}");
